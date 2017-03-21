@@ -1,0 +1,23 @@
+#
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:party.configuration,party_phonecountry:"
+msgid "Party Phonenumbers Country"
+msgstr "Pais telefonos del tercero"
+
+msgctxt "field:party.contact_mechanism,value_compact:"
+msgid "Value Compact"
+msgstr "Valor compacto"
+
+msgctxt "error:party.contact_mechanism:"
+msgid "The phone number \"%(phone)s\" of party \"%(party)s\" is not valid."
+msgstr "El número de teléfono \"%(phone)s\" del tercero \"%(party)s\" no es válido."
+
+msgctxt "error:party.contact_mechanism:"
+msgid "The phone number \"%(phone)s\" is a fixed line number."
+msgstr "El número de teléfono \"%(phone)s\" corresponde a una linea fija."
+
+msgctxt "error:party.contact_mechanism:"
+msgid "The phone number \"%(phone)s\" is a mobile line number."
+msgstr "El número de teléfono \"%(phone)s\" corresponde a una linea móvil."
