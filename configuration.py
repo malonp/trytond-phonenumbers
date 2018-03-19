@@ -31,7 +31,8 @@ except ImportError:
     phonenumbers = None
 
 
-__all__ = ['Configuration']
+__all__ = ['Configuration',
+            ]
 
 
 _PHONE_TYPES = {
