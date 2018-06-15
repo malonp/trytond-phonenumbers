@@ -38,8 +38,7 @@ _PHONE_TYPES = {
 __all__ = ['ContactMechanism']
 
 
-class ContactMechanism:
-    __metaclass__ = PoolMeta
+class ContactMechanism(metaclass=PoolMeta):
     __name__ = 'party.contact_mechanism'
 
     value_compact = fields.Char('Value Compact', readonly=True)
@@ -144,7 +143,7 @@ class ContactMechanism:
     @classmethod
     def create(cls, vlist):
         table =  cls.__table__()
-        cursor = Transaction().cursor
+        cursor = Transaction().connection.cursor()
 
         mechanisms = super(ContactMechanism, cls).create(vlist)
 
@@ -170,7 +169,7 @@ class ContactMechanism:
     @classmethod
     def write(cls, *args):
         table =  cls.__table__()
-        cursor = Transaction().cursor
+        cursor = Transaction().connection.cursor()
 
         super(ContactMechanism, cls).write(*args)
 

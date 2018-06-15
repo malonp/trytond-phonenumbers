@@ -27,5 +27,6 @@ from .configuration import *
 def register():
     Pool.register(
         Configuration,
+        ConfigurationPhoneCountry,
         ContactMechanism,
         module='phonenumbers', type_='model')

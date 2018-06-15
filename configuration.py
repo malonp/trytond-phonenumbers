@@ -20,9 +20,10 @@
 ##############################################################################
 
 
-from trytond.model import fields
+from trytond.model import ModelSQL, ValueMixin, fields
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
+
 
 try:
     import phonenumbers
@@ -32,6 +33,7 @@ except ImportError:
 
 
 __all__ = ['Configuration',
+            'ConfigurationPhoneCountry',
             ]
 
 
@@ -41,12 +43,12 @@ _PHONE_TYPES = {
     'fax',
     }
 
-class Configuration:
-    __metaclass__ = PoolMeta
+
+class Configuration(metaclass=PoolMeta):
     __name__ = 'party.configuration'
 
-    party_phonecountry = fields.Property(fields.Many2One('country.country',
-            'Party Phonenumbers Country'))
+    party_phonecountry = fields.MultiValue(fields.Many2One('country.country',
+        'Party Phonenumbers Country'))
 
     @classmethod
     def write(cls, *args):
@@ -69,7 +71,7 @@ class Configuration:
 
             ContactMechanism = Pool().get('party.contact_mechanism')
             table = ContactMechanism.__table__()
-            cursor = Transaction().cursor
+            cursor = Transaction().connection.cursor()
 
             for contact in ContactMechanism.search([('type', 'in', _PHONE_TYPES)]):
                 values = {}
@@ -96,3 +98,11 @@ class Configuration:
                                     columns=[table.value],
                                     values=[value],
                                     where=(table.id==contact.id)))
+
+
+class ConfigurationPhoneCountry(ModelSQL, ValueMixin):
+    'Party Configuration PhoneCountry'
+    __name__ = 'party.configuration.party_phonecountry'
+
+    party_phonecountry = fields.Many2One('country.country',
+        'Party Phonenumbers Country')
