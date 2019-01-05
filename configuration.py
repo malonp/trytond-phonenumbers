@@ -20,10 +20,12 @@
 ##############################################################################
 
 
-from trytond.model import ModelSQL, ValueMixin, fields
+from trytond.model import ModelSQL, fields
+from trytond.model import ValueMixin
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
 
+from trytond.modules.party.configuration import _ConfigurationValue
 
 try:
     import phonenumbers
@@ -44,11 +46,13 @@ _PHONE_TYPES = {
     }
 
 
+party_phonecountry = fields.Many2One('country.country', 'Party Phonenumbers Country')
+
+
 class Configuration(metaclass=PoolMeta):
     __name__ = 'party.configuration'
 
-    party_phonecountry = fields.MultiValue(fields.Many2One('country.country',
-        'Party Phonenumbers Country'))
+    party_phonecountry = fields.MultiValue(party_phonecountry)
 
     @classmethod
     def write(cls, *args):
@@ -100,9 +104,9 @@ class Configuration(metaclass=PoolMeta):
                                     where=(table.id==contact.id)))
 
 
-class ConfigurationPhoneCountry(ModelSQL, ValueMixin):
+class ConfigurationPhoneCountry(_ConfigurationValue, ModelSQL, ValueMixin):
     'Party Configuration PhoneCountry'
     __name__ = 'party.configuration.party_phonecountry'
 
-    party_phonecountry = fields.Many2One('country.country',
-        'Party Phonenumbers Country')
+    party_phonecountry = party_phonecountry
+    _configuration_value_field = 'party_phonecountry'
