@@ -24,9 +24,6 @@ from trytond.pool import Pool
 from .contact_mechanism import *
 from .configuration import *
 
+
 def register():
-    Pool.register(
-        Configuration,
-        ConfigurationPhoneCountry,
-        ContactMechanism,
-        module='phonenumbers', type_='model')
+    Pool.register(Configuration, ConfigurationPhoneCountry, ContactMechanism, module='phonenumbers', type_='model')
