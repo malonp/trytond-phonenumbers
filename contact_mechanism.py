@@ -37,8 +37,6 @@ __all__ = ['ContactMechanism']
 class ContactMechanism(metaclass=PoolMeta):
     __name__ = 'party.contact_mechanism'
 
-    value_compact = fields.Char('Value Compact', readonly=True)
-
     @classmethod
     def __setup__(cls):
         super(ContactMechanism, cls).__setup__()
@@ -94,38 +92,6 @@ class ContactMechanism(metaclass=PoolMeta):
         self.sip = value
         self.other_value = value
         self.url = self.get_url(value=value)
-
-    @fields.depends('value', 'type')
-    def on_change_type(self):
-        self.url = self.get_url(value=self.value)
-
-    @fields.depends('value', 'type')
-    def on_change_value(self):
-        return self._change_value(self.value, self.type)
-
-    @fields.depends('website', 'type')
-    def on_change_website(self):
-        return self._change_value(self.website, self.type)
-
-    @fields.depends('email', 'type')
-    def on_change_email(self):
-        return self._change_value(self.email, self.type)
-
-    @fields.depends('skype', 'type')
-    def on_change_skype(self):
-        return self._change_value(self.skype, self.type)
-
-    @fields.depends('sip', 'type')
-    def on_change_sip(self):
-        return self._change_value(self.sip, self.type)
-
-    @fields.depends('other_value', 'type')
-    def on_change_other_value(self):
-        return self._change_value(self.other_value, self.type)
-
-    @classmethod
-    def search_rec_name(cls, name, clause):
-        return ['OR', ('value',) + tuple(clause[1:]), ('value_compact',) + tuple(clause[1:])]
 
     @classmethod
     def create(cls, vlist):
