@@ -20,10 +20,12 @@
 ##############################################################################
 
 
-from trytond.model import ModelSQL, ValueMixin, fields
+from trytond.model import ModelSQL, fields
+from trytond.model import ValueMixin
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
 
+from trytond.modules.party.configuration import _ConfigurationValue
 
 try:
     import phonenumbers
@@ -32,23 +34,19 @@ except ImportError:
     phonenumbers = None
 
 
-__all__ = ['Configuration',
-            'ConfigurationPhoneCountry',
-            ]
+__all__ = ['Configuration', 'ConfigurationPhoneCountry']
 
 
-_PHONE_TYPES = {
-    'phone',
-    'mobile',
-    'fax',
-    }
+_PHONE_TYPES = {'phone', 'mobile', 'fax'}
+
+
+party_phonecountry = fields.Many2One('country.country', 'Party Phonenumbers Country')
 
 
 class Configuration(metaclass=PoolMeta):
     __name__ = 'party.configuration'
 
-    party_phonecountry = fields.MultiValue(fields.Many2One('country.country',
-        'Party Phonenumbers Country'))
+    party_phonecountry = fields.MultiValue(party_phonecountry)
 
     @classmethod
     def write(cls, *args):
@@ -66,8 +64,7 @@ class Configuration(metaclass=PoolMeta):
         else:
             party_phonecountry_code_new = ''
 
-        if phonenumbers and \
-            party_phonecountry_code_new != party_phonecountry_code:
+        if phonenumbers and party_phonecountry_code_new != party_phonecountry_code:
 
             ContactMechanism = Pool().get('party.contact_mechanism')
             table = ContactMechanism.__table__()
@@ -76,33 +73,25 @@ class Configuration(metaclass=PoolMeta):
             for contact in ContactMechanism.search([('type', 'in', _PHONE_TYPES)]):
                 values = {}
 
-                #value_compact use PhoneNumberFormat.E164
+                # value_compact use PhoneNumberFormat.E164
                 phonenumber = phonenumbers.parse(contact.value_compact)
                 region_code = phonenumbers.region_code_for_country_code(phonenumber.country_code)
 
                 if region_code == party_phonecountry_code:
                     # consider phonenumber with extensions p.e. 918041213 ext.412
                     phonenumber = phonenumbers.parse(contact.value, region_code)
-                    value = phonenumbers.format_number(
-                            phonenumber, PhoneNumberFormat.INTERNATIONAL)
-                    cursor.execute(*table.update(
-                                    columns=[table.value],
-                                    values=[value],
-                                    where=(table.id==contact.id)))
+                    value = phonenumbers.format_number(phonenumber, PhoneNumberFormat.INTERNATIONAL)
+                    cursor.execute(*table.update(columns=[table.value], values=[value], where=(table.id == contact.id)))
 
                 elif region_code == party_phonecountry_code_new:
                     phonenumber = phonenumbers.parse(contact.value)
-                    value = phonenumbers.format_number(
-                            phonenumber, PhoneNumberFormat.NATIONAL)
-                    cursor.execute(*table.update(
-                                    columns=[table.value],
-                                    values=[value],
-                                    where=(table.id==contact.id)))
+                    value = phonenumbers.format_number(phonenumber, PhoneNumberFormat.NATIONAL)
+                    cursor.execute(*table.update(columns=[table.value], values=[value], where=(table.id == contact.id)))
 
 
-class ConfigurationPhoneCountry(ModelSQL, ValueMixin):
+class ConfigurationPhoneCountry(_ConfigurationValue, ModelSQL, ValueMixin):
     'Party Configuration PhoneCountry'
     __name__ = 'party.configuration.party_phonecountry'
 
-    party_phonecountry = fields.Many2One('country.country',
-        'Party Phonenumbers Country')
+    party_phonecountry = party_phonecountry
+    _configuration_value_field = 'party_phonecountry'
