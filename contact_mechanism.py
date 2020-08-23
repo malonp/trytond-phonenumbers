@@ -22,14 +22,13 @@
 from trytond.model import fields
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
+from trytond.modules.party.contact_mechanism import _PHONE_TYPES
 
 try:
     import phonenumbers
     from phonenumbers import PhoneNumberFormat, PhoneNumberType, NumberParseException
 except ImportError:
     phonenumbers = None
-
-_PHONE_TYPES = {'phone', 'mobile', 'fax'}
 
 __all__ = ['ContactMechanism']
 
@@ -82,72 +81,6 @@ class ContactMechanism(metaclass=PoolMeta):
             else:
                 value = phonenumbers.format_number(phonenumber, PhoneNumberFormat.E164)
         return value
-
-    def _change_value(self, value, type_):
-        self.value = self.format_value(value=value, type_=type_)
-        self.value_compact = self.format_value_compact(value=value, type_=type_)
-        self.website = value
-        self.email = value
-        self.skype = value
-        self.sip = value
-        self.other_value = value
-        self.url = self.get_url(value=value)
-
-    @classmethod
-    def create(cls, vlist):
-        table = cls.__table__()
-        cursor = Transaction().connection.cursor()
-
-        mechanisms = super(ContactMechanism, cls).create(vlist)
-
-        for mechanism in mechanisms:
-            value = mechanism.format_value(value=mechanism.value, type_=mechanism.type)
-            value_compact = mechanism.format_value_compact(value=mechanism.value, type_=mechanism.type)
-
-            if value != mechanism.value:
-                cursor.execute(
-                    *table.update(
-                        columns=[table.value, table.value_compact],
-                        values=[value, value_compact],
-                        where=(table.id == mechanism.id),
-                    )
-                )
-            elif value_compact != mechanism.value_compact:
-                cursor.execute(
-                    *table.update(
-                        columns=[table.value_compact], values=[value_compact], where=(table.id == mechanism.id)
-                    )
-                )
-
-        return mechanisms
-
-    @classmethod
-    def write(cls, *args):
-        table = cls.__table__()
-        cursor = Transaction().connection.cursor()
-
-        super(ContactMechanism, cls).write(*args)
-
-        actions = iter(args)
-        for mechanisms, values in zip(actions, actions):
-            for mechanism in mechanisms:
-                value = mechanism.format_value(value=mechanism.value, type_=mechanism.type)
-                value_compact = mechanism.format_value_compact(value=mechanism.value, type_=mechanism.type)
-
-                if value != mechanism.value:
-                    cursor.execute(
-                        *table.update(
-                            columns=[table.value, table.value_compact],
-                            values=[value, value_compact],
-                            where=(table.id == mechanism.id),
-                        )
-                    )
-                elif value_compact != mechanism.value_compact:
-                    cursor.execute(
-                        *table.update(
-                            columns=[table.value_compact], values=[value_compact], where=(table.id == mechanism.id)
-                        )
-                    )
 
     @classmethod
     def validate(cls, mechanisms):
