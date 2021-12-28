@@ -20,13 +20,13 @@
 ##############################################################################
 
 from trytond.model import fields
+from trytond.modules.party.contact_mechanism import _PHONE_TYPES
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
-from trytond.modules.party.contact_mechanism import _PHONE_TYPES
 
 try:
     import phonenumbers
-    from phonenumbers import PhoneNumberFormat, PhoneNumberType, NumberParseException
+    from phonenumbers import NumberParseException, PhoneNumberFormat, PhoneNumberType
 except ImportError:
     phonenumbers = None
 

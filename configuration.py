@@ -20,16 +20,14 @@
 ##############################################################################
 
 
-from trytond.model import ModelSQL, fields
-from trytond.model import ValueMixin
+from trytond.model import ModelSQL, ValueMixin, fields
+from trytond.modules.party.configuration import _ConfigurationValue
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
 
-from trytond.modules.party.configuration import _ConfigurationValue
-
 try:
     import phonenumbers
-    from phonenumbers import PhoneNumberFormat, PhoneNumberType, NumberParseException
+    from phonenumbers import NumberParseException, PhoneNumberFormat, PhoneNumberType
 except ImportError:
     phonenumbers = None
 

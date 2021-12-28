@@ -21,8 +21,8 @@
 
 from trytond.pool import Pool
 
-from .contact_mechanism import *
 from .configuration import *
+from .contact_mechanism import *
 
 
 def register():
