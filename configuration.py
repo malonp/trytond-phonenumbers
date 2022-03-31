@@ -27,7 +27,7 @@ from trytond.transaction import Transaction
 
 try:
     import phonenumbers
-    from phonenumbers import NumberParseException, PhoneNumberFormat, PhoneNumberType
+    from phonenumbers import PhoneNumberFormat
 except ImportError:
     phonenumbers = None
 
@@ -69,7 +69,6 @@ class Configuration(metaclass=PoolMeta):
             cursor = Transaction().connection.cursor()
 
             for contact in ContactMechanism.search([('type', 'in', _PHONE_TYPES)]):
-                values = {}
 
                 # value_compact use PhoneNumberFormat.E164
                 phonenumber = phonenumbers.parse(contact.value_compact)

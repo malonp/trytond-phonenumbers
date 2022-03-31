@@ -19,10 +19,8 @@
 #
 ##############################################################################
 
-from trytond.model import fields
 from trytond.modules.party.contact_mechanism import _PHONE_TYPES
 from trytond.pool import Pool, PoolMeta
-from trytond.transaction import Transaction
 
 try:
     import phonenumbers
